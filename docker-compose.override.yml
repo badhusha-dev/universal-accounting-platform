@@ -1,0 +1,105 @@
+# Development override for docker-compose.yml
+# This file provides development-specific configurations
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+
+services:
+  # Override database for development
+  postgres:
+    environment:
+      POSTGRES_DB: accounting_db_dev
+      POSTGRES_USER: accounting_user
+      POSTGRES_PASSWORD: accounting_pass_dev
+    volumes:
+      - ./dev-data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Override Redis for development
+  redis:
+    volumes:
+      - ./dev-data/redis:/data
+    ports:
+      - "6379:6379"
+
+  # Override Kafka for development
+  kafka:
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+    volumes:
+      - ./dev-data/kafka:/var/lib/kafka/data
+
+  # Override all microservices for development
+  eureka-server:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    volumes:
+      - ./logs/eureka-server:/app/logs
+
+  gateway:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    volumes:
+      - ./logs/gateway:/app/logs
+
+  auth-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
+      SPRING_DATASOURCE_USERNAME: accounting_user
+      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+    volumes:
+      - ./logs/auth-service:/app/logs
+
+  tenant-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
+      SPRING_DATASOURCE_USERNAME: accounting_user
+      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+    volumes:
+      - ./logs/tenant-service:/app/logs
+
+  ledger-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
+      SPRING_DATASOURCE_USERNAME: accounting_user
+      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+    volumes:
+      - ./logs/ledger-service:/app/logs
+
+  transaction-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
+      SPRING_DATASOURCE_USERNAME: accounting_user
+      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+    volumes:
+      - ./logs/transaction-service:/app/logs
+
+  reports-service:
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
+      SPRING_DATASOURCE_USERNAME: accounting_user
+      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+    volumes:
+      - ./logs/reports-service:/app/logs
+
+  frontend:
+    environment:
+      REACT_APP_API_URL: http://localhost:8080
+      REACT_APP_ENV: development
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+
+volumes:
+  # Development volumes
+  dev_postgres_data:
+  dev_redis_data:
+  dev_kafka_data:
