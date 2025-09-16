@@ -30,7 +30,6 @@
         <module>auth-service</module>
         <module>tenant-service</module>
         <module>ledger-service</module>
-        <module>transaction-service</module>
         <module>reports-service</module>
     </modules>
 

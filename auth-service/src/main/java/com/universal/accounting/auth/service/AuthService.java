@@ -4,8 +4,9 @@ import com.universal.accounting.auth.dto.AuthDto;
 import com.universal.accounting.auth.repository.UserRepository;
 import com.universal.accounting.auth.entity.User;
 import com.universal.accounting.event.contracts.Events;
+import com.universal.accounting.common.aspects.LogExecution;
+import com.universal.accounting.common.aspects.MonitorPerformance;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthService {
     
     private final UserRepository userRepository;
@@ -29,6 +29,8 @@ public class AuthService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
     
     @Transactional
+    @LogExecution
+    @MonitorPerformance
     public AuthDto.AuthResponse register(AuthDto.RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username already exists");
@@ -41,7 +43,7 @@ public class AuthService {
         User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .password(passwordEncoder.encode(request.getPassword()))
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .role(User.UserRole.USER)
@@ -75,6 +77,8 @@ public class AuthService {
                 .build();
     }
     
+    @LogExecution
+    @MonitorPerformance
     public AuthDto.AuthResponse login(AuthDto.LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -108,6 +112,8 @@ public class AuthService {
                 .build();
     }
     
+    @LogExecution
+    @MonitorPerformance
     public AuthDto.AuthResponse refreshToken(AuthDto.RefreshTokenRequest request) {
         String username = jwtService.extractUsername(request.getRefreshToken());
         User user = userRepository.findByUsername(username)

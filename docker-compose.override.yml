@@ -7,8 +7,8 @@ services:
   postgres:
     environment:
       POSTGRES_DB: accounting_db_dev
-      POSTGRES_USER: accounting_user
-      POSTGRES_PASSWORD: accounting_pass_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: badsha@123
     volumes:
       - ./dev-data/postgres:/var/lib/postgresql/data
     ports:
@@ -49,8 +49,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
-      SPRING_DATASOURCE_USERNAME: accounting_user
-      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: badsha@123
     volumes:
       - ./logs/auth-service:/app/logs
 
@@ -58,8 +58,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
-      SPRING_DATASOURCE_USERNAME: accounting_user
-      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: badsha@123
     volumes:
       - ./logs/tenant-service:/app/logs
 
@@ -67,26 +67,26 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
-      SPRING_DATASOURCE_USERNAME: accounting_user
-      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: badsha@123
     volumes:
       - ./logs/ledger-service:/app/logs
 
-  transaction-service:
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
-      SPRING_DATASOURCE_USERNAME: accounting_user
-      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
-    volumes:
-      - ./logs/transaction-service:/app/logs
+  # transaction-service:
+  #   environment:
+  #     SPRING_PROFILES_ACTIVE: dev
+  #     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
+  #     SPRING_DATASOURCE_USERNAME: accounting_user
+  #     SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+  #   volumes:
+  #     - ./logs/transaction-service:/app/logs
 
   reports-service:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/accounting_db_dev
-      SPRING_DATASOURCE_USERNAME: accounting_user
-      SPRING_DATASOURCE_PASSWORD: accounting_pass_dev
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: badsha@123
     volumes:
       - ./logs/reports-service:/app/logs
 

@@ -4,8 +4,10 @@ import com.universal.accounting.common.models.Tenant;
 import com.universal.accounting.event.contracts.Events;
 import com.universal.accounting.tenant.dto.TenantDto;
 import com.universal.accounting.tenant.repository.TenantRepository;
+import com.universal.accounting.common.aspects.LogExecution;
+import com.universal.accounting.common.aspects.MonitorPerformance;
+import com.universal.accounting.common.aspects.RequireTenant;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +19,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TenantService {
     
     private final TenantRepository tenantRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
     
     @Transactional
+    @LogExecution
+    @MonitorPerformance
     public TenantDto.Response createTenant(TenantDto.CreateRequest request) {
         if (tenantRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email already exists");
@@ -65,12 +68,16 @@ public class TenantService {
         return mapToResponse(tenant);
     }
     
+    @LogExecution
+    @MonitorPerformance
     public TenantDto.Response getTenantById(Long id) {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tenant not found"));
         return mapToResponse(tenant);
     }
     
+    @LogExecution
+    @MonitorPerformance
     public List<TenantDto.Response> getAllTenants() {
         return tenantRepository.findAll().stream()
                 .map(this::mapToResponse)
@@ -78,6 +85,8 @@ public class TenantService {
     }
     
     @Transactional
+    @LogExecution
+    @MonitorPerformance
     public TenantDto.Response updateTenant(Long id, TenantDto.UpdateRequest request) {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tenant not found"));
@@ -100,6 +109,8 @@ public class TenantService {
     }
     
     @Transactional
+    @LogExecution
+    @MonitorPerformance
     public void deleteTenant(Long id) {
         Tenant tenant = tenantRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Tenant not found"));

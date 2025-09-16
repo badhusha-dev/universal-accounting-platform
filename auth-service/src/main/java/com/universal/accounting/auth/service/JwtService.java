@@ -6,7 +6,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.extern.slf4j.Slf4j;
+import com.universal.accounting.common.aspects.LogExecution;
+import com.universal.accounting.common.aspects.MonitorPerformance;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@Slf4j
 public class JwtService {
     
     @Value("${jwt.secret}")
@@ -26,6 +26,7 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long jwtExpiration;
     
+    @LogExecution
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
@@ -35,6 +36,8 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
     
+    @LogExecution
+    @MonitorPerformance
     public String generateToken(User user) {
         return generateToken(new HashMap<>(), user);
     }
@@ -43,6 +46,8 @@ public class JwtService {
         return buildToken(extraClaims, user, jwtExpiration);
     }
     
+    @LogExecution
+    @MonitorPerformance
     public String generateRefreshToken(User user) {
         return buildToken(new HashMap<>(), user, jwtExpiration * 7); // 7 days
     }

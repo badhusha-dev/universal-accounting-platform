@@ -3,20 +3,14 @@ FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy dependency files first for better layer caching
-COPY pom.xml .
-COPY shared/pom.xml shared/
-COPY eureka-server/pom.xml eureka-server/
+# Copy the entire project structure for Maven multi-module build
+COPY . .
 
 # Download dependencies (this layer will be cached if pom.xml doesn't change)
 RUN mvn dependency:go-offline -pl eureka-server -am
 
-# Copy source code
-COPY shared/ shared/
-COPY eureka-server/ eureka-server/
-
 # Build the application
-RUN mvn clean package -pl eureka-server -am -DskipTests -o
+RUN mvn clean package -pl eureka-server -am -DskipTests
 
 # Runtime stage with distroless image for security
 FROM eclipse-temurin:21-jre-alpine

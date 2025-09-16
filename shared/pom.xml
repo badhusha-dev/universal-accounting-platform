@@ -9,6 +9,7 @@
         <groupId>com.universal.accounting</groupId>
         <artifactId>universal-accounting-platform</artifactId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>shared</artifactId>
@@ -18,5 +19,6 @@
     <modules>
         <module>common-models</module>
         <module>event-contracts</module>
+        <module>common-aspects</module>
     </modules>
 </project>
